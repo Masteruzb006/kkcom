@@ -2,210 +2,122 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>kk.com — Поиск работы в Таджикистане</title>
+  <title>МойРаботаджикон.рф</title>
   <style>
-    :root {
-      --bg-color: #f7f7f7;
-      --text-color: #000;
-      --header-bg: #005bbb;
-      --card-bg: #fff;
-    }
-    [data-theme="dark"] {
-      --bg-color: #121212;
-      --text-color: #fff;
-      --header-bg: #1e1e1e;
-      --card-bg: #2c2c2c;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: var(--header-bg);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    nav {
-      text-align: center;
-      margin: 10px;
-    }
-    nav button, select {
-      margin: 5px;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-    }
-    .job-card {
-      background-color: var(--card-bg);
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      transition: transform 0.2s;
-    }
-    .job-card:hover {
-      transform: scale(1.01);
-    }
-    .job-card h3 {
-      margin: 0;
-    }
-    .apply-btn {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 10px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-    form {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    form input, form textarea, form select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-    }
-    footer {
-      background-color: var(--header-bg);
-      color: white;
-      text-align: center;
-      padding: 10px;
-      margin-top: 20px;
-    }
+    body { font-family: Arial; margin: 0; padding: 0; }
+    header, footer { background: #444; color: white; text-align: center; padding: 10px; }
+    nav { background: #eee; padding: 10px; text-align: center; }
+    nav button { margin: 5px; padding: 10px 15px; }
+    .container { padding: 20px; }
+    .job-card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    input, textarea, select { display: block; margin: 10px 0; padding: 8px; width: 100%; }
+    form { max-width: 400px; margin: auto; }
+    #searchBox { width: 80%; padding: 10px; }
+    #searchBtn { padding: 10px; }
   </style>
 </head>
 <body>
   <header>
-    <h1>kk.com — Работа в Таджикистане</h1>
-    <p id="subtitle">Поиск работы | Иловакуни ҷойҳо | Job Search</p>
-    <div>
-      <select onchange="changeLang(this.value)">
-        <option value="ru">Русский</option>
-        <option value="tj">Тоҷикӣ</option>
-        <option value="en">English</option>
-      </select>
-      <button onclick="toggleTheme()">Сменить тему</button>
-    </div>
+    <h1>МойРаботаджикон.рф</h1>
+    <input id="searchBox" type="text" placeholder="Введите вакансию...">
+    <button id="searchBtn" onclick="renderJobs()">Поиск</button>
   </header>
 
   <nav>
     <button onclick="showHome()">Главная</button>
-    <button onclick="showAdd()">Добавить вакансию</button>
-    <select id="categoryFilter" onchange="renderJobs()">
-      <option value="all">Все категории</option>
-      <option value="it">IT</option>
-      <option value="construction">Строительство</option>
-      <option value="education">Образование</option>
-      <option value="agriculture">Сельское хозяйство</option>
-      <option value="medicine">Медицина</option>
-      <option value="finance">Финансы</option>
-      <option value="service">Сфера услуг</option>
-      <option value="transport">Транспорт</option>
-    </select>
-    <select id="regionFilter" onchange="renderJobs()">
-      <option value="all">Все регионы</option>
-      <option value="dushanbe">Душанбе</option>
-      <option value="sughd">Согдийская область</option>
-      <option value="khatlon">Хатлонская область</option>
-      <option value="gbao">ГБАО</option>
-      <option value="rrp">РРП</option>
-    </select>
-    <select id="ageFilter" onchange="renderJobs()">
-      <option value="all">Все возрасты</option>
-      <option value="16-25">16–25 лет</option>
-      <option value="26-35">26–35 лет</option>
-      <option value="36-45">36–45 лет</option>
-      <option value="46-60">46–60 лет</option>
-    </select>
+    <button onclick="showAddJob()">Добавить вакансию</button>
+    <button onclick="showRegister()">Регистрация</button>
+    <button onclick="showLogin()">Войти</button>
+    <button onclick="showProfile()">Личный кабинет</button>
   </nav>
 
-  <div class="container" id="content">
-    <!-- Главная страница -->
-    <div id="home">
-      <input id="searchBox" type="text" placeholder="Введите вакансию..." style="width:100%;padding:10px;margin-bottom:15px;">
-      <div id="jobs"></div>
-    </div>
+  <div id="home" class="container"></div>
+  <div id="add-job" class="container" style="display:none;">
+    <h2>Добавить вакансию</h2>
+    <form onsubmit="addJob(event)">
+      <input id="title" placeholder="Должность" required>
+      <input id="company" placeholder="Компания" required>
+      <input id="city" placeholder="Город" required>
+      <input id="category" placeholder="Категория" required>
+      <input id="minAge" type="number" placeholder="Мин. возраст">
+      <input id="maxAge" type="number" placeholder="Макс. возраст">
+      <textarea id="description" placeholder="Описание"></textarea>
+      <button type="submit">Добавить</button>
+    </form>
+  </div>
 
-    <!-- Форма добавления вакансии -->
-    <div id="add-job" style="display:none">
-      <h2>Добавить вакансию</h2>
-      <form onsubmit="addJob(event)">
-        <input type="text" id="title" placeholder="Название вакансии" required>
-        <input type="text" id="company" placeholder="Компания" required>
-        <input type="text" id="city" placeholder="Город/Район" required>
-        <select id="category">
-          <option value="it">IT</option>
-          <option value="construction">Строительство</option>
-          <option value="education">Образование</option>
-          <option value="agriculture">Сельское хозяйство</option>
-          <option value="medicine">Медицина</option>
-          <option value="finance">Финансы</option>
-          <option value="service">Сфера услуг</option>
-          <option value="transport">Транспорт</option>
-        </select>
-        <input type="number" id="minAge" placeholder="Минимальный возраст" min="16" max="60">
-        <input type="number" id="maxAge" placeholder="Максимальный возраст" min="16" max="60">
-        <textarea id="description" placeholder="Описание вакансии" required></textarea>
-        <button type="submit">Добавить</button>
-      </form>
-    </div>
+  <div id="register" class="container" style="display:none;">
+    <h2>Регистрация</h2>
+    <form onsubmit="registerUser(event)">
+      <input id="regName" placeholder="Имя" required>
+      <input id="regEmail" placeholder="Email" type="email" required>
+      <input id="regPass" placeholder="Пароль" type="password" required>
+      <button type="submit">Зарегистрироваться</button>
+    </form>
+  </div>
+
+  <div id="login" class="container" style="display:none;">
+    <h2>Вход</h2>
+    <form onsubmit="loginUser(event)">
+      <input id="loginEmail" placeholder="Email" type="email" required>
+      <input id="loginPass" placeholder="Пароль" type="password" required>
+      <button type="submit">Войти</button>
+    </form>
+  </div>
+
+  <div id="profile" class="container" style="display:none;">
+    <h2>Мои вакансии</h2>
+    <div id="myJobs"></div>
   </div>
 
   <footer>
-    © 2025 kk.com | Email: info@kk.com | Telegram: @kkjob
+    <p>&copy; 2025 МойРаботаджикон.рф</p>
   </footer>
 
   <script>
-    const jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    let currentUser = null;
 
-    const translations = {
-      ru: { subtitle: 'Поиск работы | Иловакуни ҷойҳо | Job Search' },
-      tj: { subtitle: 'Ҷустуҷӯи кор | Kor ba dast orad | Job Search' },
-      en: { subtitle: 'Job Search in Tajikistan' },
+    function renderJobs() {
+      const searchText = document.getElementById('searchBox').value.toLowerCase();
+      const filtered = jobs.filter(job => job.title.toLowerCase().includes(searchText));
+      const home = document.getElementById('home');
+      home.innerHTML = '<h2>Вакансии</h2>';
+      filtered.forEach(job => {
+        const div = document.createElement('div');
+        div.className = 'job-card';
+        div.innerHTML = `<h3>${job.title}</h3><p>${job.company} — ${job.city}</p><p>${job.description}</p>`;
+        home.appendChild(div);
+      });
+    }
+
+    function show(section) {
+      ['home','add-job','register','login','profile'].forEach(id => {
+        document.getElementById(id).style.display = (id === section) ? 'block' : 'none';
+      });
+      if (section === 'home') renderJobs();
+    }
+    const showHome = () => show('home');
+    const showAddJob = () => show('add-job');
+    const showRegister = () => show('register');
+    const showLogin = () => show('login');
+    const showProfile = () => {
+      if (!currentUser) return alert('Сначала войдите!');
+      show('profile');
+      const container = document.getElementById('myJobs');
+      container.innerHTML = '';
+      (currentUser.jobs || []).forEach(job => {
+        const div = document.createElement('div');
+        div.className = 'job-card';
+        div.innerHTML = `<h3>${job.title}</h3><p>${job.description}</p>`;
+        container.appendChild(div);
+      });
     };
-
-    const langElements = {
-      subtitle: document.getElementById('subtitle')
-    };
-
-    function changeLang(lang) {
-      for (let key in translations[lang]) {
-        langElements[key].innerText = translations[lang][key];
-      }
-    }
-
-    function toggleTheme() {
-      document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark';
-    }
-
-    function showHome() {
-      document.getElementById('home').style.display = 'block';
-      document.getElementById('add-job').style.display = 'none';
-      renderJobs();
-    }
-
-    function showAdd() {
-      document.getElementById('home').style.display = 'none';
-      document.getElementById('add-job').style.display = 'block';
-    }
 
     function addJob(e) {
       e.preventDefault();
+      if (!currentUser) return alert('Сначала войдите!');
       const job = {
         title: document.getElementById('title').value,
         company: document.getElementById('company').value,
@@ -213,47 +125,45 @@
         category: document.getElementById('category').value,
         minAge: parseInt(document.getElementById('minAge').value) || 16,
         maxAge: parseInt(document.getElementById('maxAge').value) || 60,
-        description: document.getElementById('description').value
+        description: document.getElementById('description').value,
+        author: currentUser.email
       };
       jobs.push(job);
+      currentUser.jobs = currentUser.jobs || [];
+      currentUser.jobs.push(job);
       localStorage.setItem('jobs', JSON.stringify(jobs));
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Вакансия добавлена!');
       showHome();
     }
 
-    function renderJobs() {
-      const container = document.getElementById('jobs');
-      const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-      const selectedCategory = document.getElementById('categoryFilter').value;
-      const selectedRegion = document.getElementById('regionFilter').value;
-      const ageGroup = document.getElementById('ageFilter').value;
-      const [minAgeFilter, maxAgeFilter] = ageGroup !== 'all' ? ageGroup.split('-').map(Number) : [16, 60];
-      container.innerHTML = '';
-      jobs.filter(job => 
-        job.title.toLowerCase().includes(searchTerm) &&
-        (selectedCategory === 'all' || job.category === selectedCategory) &&
-        (selectedRegion === 'all' || job.city.toLowerCase().includes(selectedRegion)) &&
-        job.minAge >= minAgeFilter && job.maxAge <= maxAgeFilter
-      ).forEach(job => {
-        const div = document.createElement('div');
-        div.className = 'job-card';
-        div.innerHTML = `<h3>${job.title}</h3>
-          <p>Компания: ${job.company} | Город/Район: ${job.city}</p>
-          <p>Возраст: ${job.minAge}–${job.maxAge}</p>
-          <p>${job.description}</p>
-          <button class="apply-btn" onclick="applyToJob('${job.title}')">Откликнуться</button>`;
-        container.appendChild(div);
-      });
+    function registerUser(e) {
+      e.preventDefault();
+      const user = {
+        name: document.getElementById('regName').value,
+        email: document.getElementById('regEmail').value,
+        pass: document.getElementById('regPass').value,
+        jobs: []
+      };
+      if (users.find(u => u.email === user.email)) return alert('Пользователь уже существует');
+      users.push(user);
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Регистрация прошла успешно!');
+      showLogin();
     }
 
-    function applyToJob(title) {
-      const name = prompt(`Введите ваше имя для отклика на: ${title}`);
-      const email = prompt('Введите ваш email:');
-      if (name && email) alert(`Спасибо, ${name}! Мы свяжемся с вами на ${email}.`);
+    function loginUser(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPass').value;
+      const user = users.find(u => u.email === email && u.pass === pass);
+      if (!user) return alert('Неверные данные');
+      currentUser = user;
+      alert(`Добро пожаловать, ${user.name}`);
+      showHome();
     }
 
-    document.getElementById('searchBox').addEventListener('input', renderJobs);
     renderJobs();
   </script>
 </body>
 </html>
-
