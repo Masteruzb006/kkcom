@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>kk.com — Поиск работы в Таджикистане</title>
+  <style>
+    :root {
+      --bg-color: #f7f7f7;
+      --text-color: #000;
+      --header-bg: #005bbb;
+      --card-bg: #fff;
+    }
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --text-color: #fff;
+      --header-bg: #1e1e1e;
+      --card-bg: #2c2c2c;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: var(--header-bg);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav {
+      text-align: center;
+      margin: 10px;
+    }
+    nav button, select {
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    .job-card {
+      background-color: var(--card-bg);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .job-card:hover {
+      transform: scale(1.01);
+    }
+    .job-card h3 {
+      margin: 0;
+    }
+    .apply-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    form {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    form input, form textarea, form select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    footer {
+      background-color: var(--header-bg);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>kk.com — Работа в Таджикистане</h1>
+    <p id="subtitle">Поиск работы | Иловакуни ҷойҳо | Job Search</p>
+    <div>
+      <select onchange="changeLang(this.value)">
+        <option value="ru">Русский</option>
+        <option value="tj">Тоҷикӣ</option>
+        <option value="en">English</option>
+      </select>
+      <button onclick="toggleTheme()">Сменить тему</button>
+    </div>
+  </header>
+
+  <nav>
+    <button onclick="showHome()">Главная</button>
+    <button onclick="showAdd()">Добавить вакансию</button>
+    <select id="categoryFilter" onchange="renderJobs()">
+      <option value="all">Все категории</option>
+      <option value="it">IT</option>
+      <option value="construction">Строительство</option>
+      <option value="education">Образование</option>
+      <option value="agriculture">Сельское хозяйство</option>
+      <option value="medicine">Медицина</option>
+      <option value="finance">Финансы</option>
+      <option value="service">Сфера услуг</option>
+      <option value="transport">Транспорт</option>
+    </select>
+    <select id="regionFilter" onchange="renderJobs()">
+      <option value="all">Все регионы</option>
+      <option value="dushanbe">Душанбе</option>
+      <option value="sughd">Согдийская область</option>
+      <option value="khatlon">Хатлонская область</option>
+      <option value="gbao">ГБАО</option>
+      <option value="rrp">РРП</option>
+    </select>
+    <select id="ageFilter" onchange="renderJobs()">
+      <option value="all">Все возрасты</option>
+      <option value="16-25">16–25 лет</option>
+      <option value="26-35">26–35 лет</option>
+      <option value="36-45">36–45 лет</option>
+      <option value="46-60">46–60 лет</option>
+    </select>
+  </nav>
+
+  <div class="container" id="content">
+    <!-- Главная страница -->
+    <div id="home">
+      <input id="searchBox" type="text" placeholder="Введите вакансию..." style="width:100%;padding:10px;margin-bottom:15px;">
+      <div id="jobs"></div>
+    </div>
+
+    <!-- Форма добавления вакансии -->
+    <div id="add-job" style="display:none">
+      <h2>Добавить вакансию</h2>
+      <form onsubmit="addJob(event)">
+        <input type="text" id="title" placeholder="Название вакансии" required>
+        <input type="text" id="company" placeholder="Компания" required>
+        <input type="text" id="city" placeholder="Город/Район" required>
+        <select id="category">
+          <option value="it">IT</option>
+          <option value="construction">Строительство</option>
+          <option value="education">Образование</option>
+          <option value="agriculture">Сельское хозяйство</option>
+          <option value="medicine">Медицина</option>
+          <option value="finance">Финансы</option>
+          <option value="service">Сфера услуг</option>
+          <option value="transport">Транспорт</option>
+        </select>
+        <input type="number" id="minAge" placeholder="Минимальный возраст" min="16" max="60">
+        <input type="number" id="maxAge" placeholder="Максимальный возраст" min="16" max="60">
+        <textarea id="description" placeholder="Описание вакансии" required></textarea>
+        <button type="submit">Добавить</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 kk.com | Email: info@kk.com | Telegram: @kkjob
+  </footer>
+
+  <script>
+    const jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+
+    const translations = {
+      ru: { subtitle: 'Поиск работы | Иловакуни ҷойҳо | Job Search' },
+      tj: { subtitle: 'Ҷустуҷӯи кор | Kor ba dast orad | Job Search' },
+      en: { subtitle: 'Job Search in Tajikistan' },
+    };
+
+    const langElements = {
+      subtitle: document.getElementById('subtitle')
+    };
+
+    function changeLang(lang) {
+      for (let key in translations[lang]) {
+        langElements[key].innerText = translations[lang][key];
+      }
+    }
+
+    function toggleTheme() {
+      document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark';
+    }
+
+    function showHome() {
+      document.getElementById('home').style.display = 'block';
+      document.getElementById('add-job').style.display = 'none';
+      renderJobs();
+    }
+
+    function showAdd() {
+      document.getElementById('home').style.display = 'none';
+      document.getElementById('add-job').style.display = 'block';
+    }
+
+    function addJob(e) {
+      e.preventDefault();
+      const job = {
+        title: document.getElementById('title').value,
+        company: document.getElementById('company').value,
+        city: document.getElementById('city').value,
+        category: document.getElementById('category').value,
+        minAge: parseInt(document.getElementById('minAge').value) || 16,
+        maxAge: parseInt(document.getElementById('maxAge').value) || 60,
+        description: document.getElementById('description').value
+      };
+      jobs.push(job);
+      localStorage.setItem('jobs', JSON.stringify(jobs));
+      showHome();
+    }
+
+    function renderJobs() {
+      const container = document.getElementById('jobs');
+      const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+      const selectedCategory = document.getElementById('categoryFilter').value;
+      const selectedRegion = document.getElementById('regionFilter').value;
+      const ageGroup = document.getElementById('ageFilter').value;
+      const [minAgeFilter, maxAgeFilter] = ageGroup !== 'all' ? ageGroup.split('-').map(Number) : [16, 60];
+      container.innerHTML = '';
+      jobs.filter(job => 
+        job.title.toLowerCase().includes(searchTerm) &&
+        (selectedCategory === 'all' || job.category === selectedCategory) &&
+        (selectedRegion === 'all' || job.city.toLowerCase().includes(selectedRegion)) &&
+        job.minAge >= minAgeFilter && job.maxAge <= maxAgeFilter
+      ).forEach(job => {
+        const div = document.createElement('div');
+        div.className = 'job-card';
+        div.innerHTML = `<h3>${job.title}</h3>
+          <p>Компания: ${job.company} | Город/Район: ${job.city}</p>
+          <p>Возраст: ${job.minAge}–${job.maxAge}</p>
+          <p>${job.description}</p>
+          <button class="apply-btn" onclick="applyToJob('${job.title}')">Откликнуться</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    function applyToJob(title) {
+      const name = prompt(`Введите ваше имя для отклика на: ${title}`);
+      const email = prompt('Введите ваш email:');
+      if (name && email) alert(`Спасибо, ${name}! Мы свяжемся с вами на ${email}.`);
+    }
+
+    document.getElementById('searchBox').addEventListener('input', renderJobs);
+    renderJobs();
+  </script>
+</body>
+</html>
+
