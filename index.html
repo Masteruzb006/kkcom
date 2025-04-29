@@ -1,169 +1,272 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>МойРаботаджикон.рф</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>kk.com — Поиск работы в Таджикистане</title>
   <style>
-    body { font-family: Arial; margin: 0; padding: 0; }
-    header, footer { background: #444; color: white; text-align: center; padding: 10px; }
-    nav { background: #eee; padding: 10px; text-align: center; }
-    nav button { margin: 5px; padding: 10px 15px; }
-    .container { padding: 20px; }
-    .job-card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
-    input, textarea, select { display: block; margin: 10px 0; padding: 8px; width: 100%; }
-    form { max-width: 400px; margin: auto; }
-    #searchBox { width: 80%; padding: 10px; }
-    #searchBtn { padding: 10px; }
+    :root {
+      --bg-color: #f7f7f7;
+      --text-color: #000;
+      --header-bg: #005bbb;
+      --card-bg: #fff;
+    }
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --text-color: #fff;
+      --header-bg: #1e1e1e;
+      --card-bg: #2c2c2c;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: var(--header-bg);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav {
+      text-align: center;
+      margin: 10px;
+    }
+    nav button, select {
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    .job-card {
+      background-color: var(--card-bg);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .apply-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    form input, form textarea, form select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    footer {
+      background-color: var(--header-bg);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+    }
+    #login-section, #account, #add-job {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>МойРаботаджикон.рф</h1>
-    <input id="searchBox" type="text" placeholder="Введите вакансию...">
-    <button id="searchBtn" onclick="renderJobs()">Поиск</button>
+    <h1>kk.com — Работа в Таджикистане</h1>
+    <p id="subtitle">Поиск работы | Иловакуни ҷойҳо | Job Search</p>
+    <div>
+      <select onchange="changeLang(this.value)">
+        <option value="ru">Русский</option>
+        <option value="tj">Тоҷикӣ</option>
+        <option value="en">English</option>
+      </select>
+      <button onclick="toggleTheme()">Сменить тему</button>
+      <button onclick="logout()">Выйти</button>
+    </div>
   </header>
 
   <nav>
     <button onclick="showHome()">Главная</button>
-    <button onclick="showAddJob()">Добавить вакансию</button>
-    <button onclick="showRegister()">Регистрация</button>
-    <button onclick="showLogin()">Войти</button>
-    <button onclick="showProfile()">Личный кабинет</button>
+    <button onclick="showAdd()">Добавить вакансию</button>
+    <button onclick="showAccount()">Личный кабинет</button>
+    <select id="categoryFilter" onchange="renderJobs()">
+      <option value="all">Все категории</option>
+      <option value="it">IT</option>
+      <option value="construction">Строительство</option>
+      <option value="education">Образование</option>
+      <option value="agriculture">Сельское хозяйство</option>
+      <option value="medicine">Медицина</option>
+      <option value="finance">Финансы</option>
+      <option value="service">Сфера услуг</option>
+      <option value="transport">Транспорт</option>
+    </select>
+    <input id="searchBox" type="text" placeholder="Поиск по названию..." />
+    <button onclick="renderJobs()">Поиск</button>
   </nav>
 
-  <div id="home" class="container"></div>
-  <div id="add-job" class="container" style="display:none;">
-    <h2>Добавить вакансию</h2>
-    <form onsubmit="addJob(event)">
-      <input id="title" placeholder="Должность" required>
-      <input id="company" placeholder="Компания" required>
-      <input id="city" placeholder="Город" required>
-      <input id="category" placeholder="Категория" required>
-      <input id="minAge" type="number" placeholder="Мин. возраст">
-      <input id="maxAge" type="number" placeholder="Макс. возраст">
-      <textarea id="description" placeholder="Описание"></textarea>
-      <button type="submit">Добавить</button>
-    </form>
-  </div>
+  <div class="container" id="content">
+    <div id="login-section">
+      <h2>Вход / Регистрация</h2>
+      <input id="username" placeholder="Имя пользователя" />
+      <input id="password" type="password" placeholder="Пароль" />
+      <button onclick="login()">Войти / Зарегистрироваться</button>
+    </div>
 
-  <div id="register" class="container" style="display:none;">
-    <h2>Регистрация</h2>
-    <form onsubmit="registerUser(event)">
-      <input id="regName" placeholder="Имя" required>
-      <input id="regEmail" placeholder="Email" type="email" required>
-      <input id="regPass" placeholder="Пароль" type="password" required>
-      <button type="submit">Зарегистрироваться</button>
-    </form>
-  </div>
+    <div id="home">
+      <div id="jobs"></div>
+    </div>
 
-  <div id="login" class="container" style="display:none;">
-    <h2>Вход</h2>
-    <form onsubmit="loginUser(event)">
-      <input id="loginEmail" placeholder="Email" type="email" required>
-      <input id="loginPass" placeholder="Пароль" type="password" required>
-      <button type="submit">Войти</button>
-    </form>
-  </div>
+    <div id="add-job">
+      <h2>Добавить вакансию</h2>
+      <form onsubmit="addJob(event)">
+        <input id="title" placeholder="Название вакансии" required />
+        <input id="company" placeholder="Компания" required />
+        <input id="city" placeholder="Город" required />
+        <select id="category">
+          <option value="it">IT</option>
+          <option value="construction">Строительство</option>
+          <option value="education">Образование</option>
+          <option value="agriculture">Сельское хозяйство</option>
+          <option value="medicine">Медицина</option>
+          <option value="finance">Финансы</option>
+          <option value="service">Сфера услуг</option>
+          <option value="transport">Транспорт</option>
+        </select>
+        <textarea id="description" placeholder="Описание вакансии" required></textarea>
+        <button type="submit">Добавить</button>
+      </form>
+    </div>
 
-  <div id="profile" class="container" style="display:none;">
-    <h2>Мои вакансии</h2>
-    <div id="myJobs"></div>
+    <div id="account">
+      <h2>Ваши вакансии</h2>
+      <div id="my-jobs"></div>
+    </div>
   </div>
 
   <footer>
-    <p>&copy; 2025 МойРаботаджикон.рф</p>
+    © 2025 kk.com | Email: info@kk.com | Telegram: @kkjob
   </footer>
 
   <script>
-    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-    let currentUser = null;
+    let currentUser = localStorage.getItem("currentUser");
+    let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+    if (!currentUser) showLogin();
+    else showHome();
 
-    function renderJobs() {
-      const searchText = document.getElementById('searchBox').value.toLowerCase();
-      const filtered = jobs.filter(job => job.title.toLowerCase().includes(searchText));
-      const home = document.getElementById('home');
-      home.innerHTML = '<h2>Вакансии</h2>';
-      filtered.forEach(job => {
-        const div = document.createElement('div');
-        div.className = 'job-card';
-        div.innerHTML = `<h3>${job.title}</h3><p>${job.company} — ${job.city}</p><p>${job.description}</p>`;
-        home.appendChild(div);
-      });
+    function toggleTheme() {
+      document.body.dataset.theme = document.body.dataset.theme === "dark" ? "" : "dark";
     }
 
-    function show(section) {
-      ['home','add-job','register','login','profile'].forEach(id => {
-        document.getElementById(id).style.display = (id === section) ? 'block' : 'none';
-      });
-      if (section === 'home') renderJobs();
-    }
-    const showHome = () => show('home');
-    const showAddJob = () => show('add-job');
-    const showRegister = () => show('register');
-    const showLogin = () => show('login');
-    const showProfile = () => {
-      if (!currentUser) return alert('Сначала войдите!');
-      show('profile');
-      const container = document.getElementById('myJobs');
-      container.innerHTML = '';
-      (currentUser.jobs || []).forEach(job => {
-        const div = document.createElement('div');
-        div.className = 'job-card';
-        div.innerHTML = `<h3>${job.title}</h3><p>${job.description}</p>`;
-        container.appendChild(div);
-      });
-    };
-
-    function addJob(e) {
-      e.preventDefault();
-      if (!currentUser) return alert('Сначала войдите!');
-      const job = {
-        title: document.getElementById('title').value,
-        company: document.getElementById('company').value,
-        city: document.getElementById('city').value,
-        category: document.getElementById('category').value,
-        minAge: parseInt(document.getElementById('minAge').value) || 16,
-        maxAge: parseInt(document.getElementById('maxAge').value) || 60,
-        description: document.getElementById('description').value,
-        author: currentUser.email
+    function changeLang(lang) {
+      const subs = {
+        ru: "Поиск работы | Иловакуни ҷойҳо | Job Search",
+        tj: "Ҷустуҷӯи кор | Kor ba dast orad | Job Search",
+        en: "Job Search in Tajikistan"
       };
-      jobs.push(job);
-      currentUser.jobs = currentUser.jobs || [];
-      currentUser.jobs.push(job);
-      localStorage.setItem('jobs', JSON.stringify(jobs));
-      localStorage.setItem('users', JSON.stringify(users));
-      alert('Вакансия добавлена!');
-      showHome();
+      document.getElementById("subtitle").innerText = subs[lang];
     }
 
-    function registerUser(e) {
-      e.preventDefault();
-      const user = {
-        name: document.getElementById('regName').value,
-        email: document.getElementById('regEmail').value,
-        pass: document.getElementById('regPass').value,
-        jobs: []
-      };
-      if (users.find(u => u.email === user.email)) return alert('Пользователь уже существует');
-      users.push(user);
-      localStorage.setItem('users', JSON.stringify(users));
-      alert('Регистрация прошла успешно!');
+    function showLogin() {
+      document.getElementById("login-section").style.display = "block";
+      document.getElementById("home").style.display = "none";
+      document.getElementById("add-job").style.display = "none";
+      document.getElementById("account").style.display = "none";
+    }
+
+    function login() {
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value;
+      if (user && pass) {
+        localStorage.setItem("currentUser", user);
+        currentUser = user;
+        showHome();
+      } else {
+        alert("Введите имя и пароль.");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      currentUser = null;
       showLogin();
     }
 
-    function loginUser(e) {
+    function showHome() {
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("home").style.display = "block";
+      document.getElementById("add-job").style.display = "none";
+      document.getElementById("account").style.display = "none";
+      renderJobs();
+    }
+
+    function showAdd() {
+      if (!currentUser) return alert("Войдите, чтобы добавить вакансию.");
+      document.getElementById("home").style.display = "none";
+      document.getElementById("add-job").style.display = "block";
+      document.getElementById("account").style.display = "none";
+    }
+
+    function showAccount() {
+      if (!currentUser) return alert("Сначала войдите.");
+      document.getElementById("home").style.display = "none";
+      document.getElementById("add-job").style.display = "none";
+      document.getElementById("account").style.display = "block";
+      const container = document.getElementById("my-jobs");
+      container.innerHTML = "";
+      jobs.filter(j => j.user === currentUser).forEach(job => {
+        const div = document.createElement("div");
+        div.className = "job-card";
+        div.innerHTML = `<h3>${job.title}</h3><p>${job.company}, ${job.city}</p><p>${job.description}</p>`;
+        container.appendChild(div);
+      });
+    }
+
+    function addJob(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const pass = document.getElementById('loginPass').value;
-      const user = users.find(u => u.email === email && u.pass === pass);
-      if (!user) return alert('Неверные данные');
-      currentUser = user;
-      alert(`Добро пожаловать, ${user.name}`);
+      const job = {
+        user: currentUser,
+        title: document.getElementById("title").value,
+        company: document.getElementById("company").value,
+        city: document.getElementById("city").value,
+        category: document.getElementById("category").value,
+        description: document.getElementById("description").value
+      };
+      jobs.push(job);
+      localStorage.setItem("jobs", JSON.stringify(jobs));
       showHome();
     }
 
-    renderJobs();
+    function renderJobs() {
+      const container = document.getElementById("jobs");
+      const search = document.getElementById("searchBox").value.toLowerCase();
+      const category = document.getElementById("categoryFilter").value;
+      container.innerHTML = "";
+      jobs.filter(job => 
+        job.title.toLowerCase().includes(search) &&
+        (category === "all" || job.category === category)
+      ).forEach(job => {
+        const div = document.createElement("div");
+        div.className = "job-card";
+        div.innerHTML = `<h3>${job.title}</h3><p>${job.company}, ${job.city}</p><p>${job.description}</p><button class="apply-btn" onclick="applyToJob('${job.title}')">Откликнуться</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    function applyToJob(title) {
+      const name = prompt(`Введите ваше имя для отклика на: ${title}`);
+      const email = prompt("Введите ваш email:");
+      if (name && email) alert(`Спасибо, ${name}! Мы свяжемся с вами на ${email}.`);
+    }
   </script>
 </body>
 </html>
+
